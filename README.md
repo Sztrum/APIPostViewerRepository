@@ -20,11 +20,9 @@
 
 ### Functionality
 
-- search and filter, by user and title
-- pagination
+- infinite scroll
 - caching data
-- animations
-- sort by data, number of comments
+- search and filter, by user and title
 - adding posts and comments
 
 ### Prerequisites

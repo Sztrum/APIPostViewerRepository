@@ -1,4 +1,6 @@
-const fetchData = async (page = 1, pageSize = 3) => {
+let page = 1;
+
+const fetchData = async (pageSize = 3) => {
   try {
     const postsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=${pageSize}`);
     const commentsResponse = await fetch('https://jsonplaceholder.typicode.com/comments');
@@ -28,7 +30,6 @@ const getUserForPost = (userId, users) =>{
 };
 
 const getCommentsForPost = (postIdva, comments) =>{
-  const filteredComments = comments.filter(comment => comment.postId === postIdva);
   const comment = comments.filter(comment => comment.postId === postIdva);
 
   const commentData = comment.map(comment => ({
@@ -41,14 +42,23 @@ const getCommentsForPost = (postIdva, comments) =>{
 
 const displayPosts = async () => {
   try {
+    const postsContainer = document.querySelector('#posts-container');
+    const loading = document.querySelector('.spinner-body');
+    const space = document.querySelector('.loading-space');
+    space.style.display = 'block';
+    loading.style.display = 'block';
+    loading.style.opacity = '0';
+
     // Fetch [posts, comments, users]
     const data = await fetchData();
+
+    loading.setAttribute('style', 'display:none !important');
+    space.setAttribute('style', 'display:none !important');
+    postsContainer.setAttribute('style', 'opacity:1');
 
     const posts = data[0];
     const comments = data[1];
     const users = data[2];
-
-    const postsContainer = document.querySelector('#posts-container');
 
     posts.forEach(post => {
       let  PostElement = document.createElement('div');
@@ -60,15 +70,13 @@ const displayPosts = async () => {
       let CommentElement = '';
       commentData.forEach(comment => {
         CommentElement += `
-        <div class="d-flex align-items-start mt-3">
-              <img style="width:35px" class="me-2 avatar-sm rounded-circle"
-                  src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=${comment.email}"
-                  alt="${comment.email} Avatar">
+        <div class="d-flex align-items-start mt-3 flex-wrap flex-sm-nowrap">
+              <img width="35" height="35" class="me-2 avatar-sm rounded-circle" src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=${comment.email}" alt="${comment.email} Avatar">
               <div class="w-100">
                   <div class="d-flex justify-content-between">
-                      <h6 class="">${comment.email}</h6>
+                      <h6 class="mt-2 mb-0">${comment.email}</h6>
                   </div>
-                  <p class="fs-6 mt-3 fw-light">
+                  <p class="fs-6 mt-3 mb-0 fw-light">
                       ${comment.body}
                   </p>
               </div>
@@ -77,7 +85,8 @@ const displayPosts = async () => {
       });
 
       PostElement.innerHTML = `
-        <div class="card mt-3">
+        <div class="card position-relative mt-3">
+          <h5 class="fs-6 fw-light text-muted mt-0 number-to-help position-absolute">Post number: ${post.id}</h5>
           <div class="px-3 pt-4 pb-2">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
@@ -119,3 +128,41 @@ const displayPosts = async () => {
 document.addEventListener('DOMContentLoaded', () => {
   displayPosts();
 });
+
+let isLoading = false;
+
+document.addEventListener('scroll', () => {
+  const container = document.getElementById('posts-container');
+  const observer = new IntersectionObserver(handleIntersection);
+  observer.observe(container);
+});
+
+function handleIntersection(entries, observer) {
+  const container = document.getElementById('posts-container');
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !isLoading) {
+      let lastChild = container.lastElementChild;
+
+      if (lastChild) {
+        let lastChildBottom = lastChild.getBoundingClientRect().bottom;
+        if (lastChildBottom <= container.getBoundingClientRect().bottom && lastChildBottom <= window.innerHeight) {
+          console.log('You are at the end.. loading new posts');
+          page++;
+          isLoading = true;
+          displayPosts();
+
+          setTimeout(() => {
+            observer.observe(container);
+            isLoading = false;
+          }, 500);
+          
+          setTimeout(() => {
+            isLoading = false;
+          }, 5000);
+          
+          observer.disconnect();
+        }
+      }
+    }
+  });
+}
