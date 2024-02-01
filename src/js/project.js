@@ -4,10 +4,10 @@ const fetchOptions = {
   cache: 'force-cache',
 }
 
-const fetchData = async (pageSize = 2) => {
+const fetchData = async (page, pageSize = 2) => {
   try {
-    const cachedPosts = localStorage.getItem('cachePorts');
-    const cachedUsers = localStorage.getItem('cacheUsers');
+    const cachedPosts = localStorage.getItem(`cachePorts-${page}`);
+    const cachedUsers = localStorage.getItem(`cacheUsers`);
 
     if(cachedPosts && cachedUsers){
       console.log('Data from local storage.');
@@ -29,7 +29,7 @@ const fetchData = async (pageSize = 2) => {
       usersResponse.json(),
     ]);
 
-    localStorage.setItem('cachePorts', JSON.stringify(posts));
+    localStorage.setItem(`cachePorts-${page}`, JSON.stringify(posts));
     localStorage.setItem('cacheUsers', JSON.stringify(users));
 
     return [posts, users];
@@ -125,7 +125,7 @@ const displayPosts = async () => {
     loading.style.opacity = '0';
 
     // Fetch [posts, comments, users]
-    const data = await fetchData();
+    const data = await fetchData(page);
 
     const posts = data[0];
     // const comments = data[1];
