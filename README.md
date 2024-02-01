@@ -7,24 +7,7 @@
 > Proszę zaprojektować rozwiązanie zoptymalizowane pod kątem <br />
 > wydajnościowym i szybkościowym.<br />
 
-## Table of Contents
-
-- [About](#about)
-- [Getting Started](#getting_started)
-
-## About <a name = "about"></a>
-
--  Test
-
-## Getting Started <a name = "getting_started"></a>
-
-### Functionality
+# Functionality
 
 - infinite scroll
 - caching data
-- search and filter, by user and title
-- adding posts and comments
-
-### Prerequisites
-
-Ready to use
