@@ -9,5 +9,5 @@
 
 # Functionality
 
-- infinite scroll
-- caching data
+- infinite scroll and expanded comments
+- caching data and loading from local storage
