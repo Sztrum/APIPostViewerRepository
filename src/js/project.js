@@ -1,22 +1,38 @@
 let page = 1;
 
+const fetchOptions = {
+  cache: 'force-cache',
+}
+
 const fetchData = async (pageSize = 2) => {
   try {
-    const postsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=${pageSize}`);
+    const cachedPosts = localStorage.getItem('cachePorts');
+    const cachedUsers = localStorage.getItem('cacheUsers');
+
+    if(cachedPosts && cachedUsers){
+      console.log('Data from local storage.');
+      return [JSON.parse(cachedPosts), JSON.parse(cachedUsers)];
+    }
+
+    const postsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=${pageSize}`, fetchOptions);
+    const usersResponse = await fetch('https://jsonplaceholder.typicode.com/users', fetchOptions);
     // const commentsResponse = await fetch('https://jsonplaceholder.typicode.com/comments');
-    const usersResponse = await fetch('https://jsonplaceholder.typicode.com/users');
+    // console.log(postsResponse.json());
 
     if(!postsResponse.ok || !usersResponse.ok){
       throw new Error(`Status: Failed to fetch`);
     }
   
-    const [posts, comments, users] = await Promise.all([
+    const [posts, users] = await Promise.all([
       postsResponse.json(),
       // commentsResponse.json(),
       usersResponse.json(),
     ]);
 
-    return [posts, comments, users];
+    localStorage.setItem('cachePorts', JSON.stringify(posts));
+    localStorage.setItem('cacheUsers', JSON.stringify(users));
+
+    return [posts, users];
     
   } catch (error) {
     console.log(error.message);
@@ -31,7 +47,13 @@ const getUserForPost = (userId, users) =>{
 
 const getCommentsForPost = async (postIdva) => {
   try {
-    const commentsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts/${postIdva}/comments`);
+    const cachedComments = localStorage.getItem(`cachedComments_${postIdva}`);
+
+    if (cachedComments) {
+      return JSON.parse(cachedComments);
+    }
+
+    const commentsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts/${postIdva}/comments`, fetchOptions);
 
     if (!commentsResponse.ok) {
       throw new Error(`Status: Failed to fetch`);
@@ -44,8 +66,9 @@ const getCommentsForPost = async (postIdva) => {
       body: comment.body
     }));
 
-    return commentData;
+    localStorage.setItem(`cachedComments_${postIdva}`, JSON.stringify(commentData));
 
+    return commentData;
   } catch (error) {
     console.log(error.message);
   }
@@ -73,7 +96,7 @@ const drawComments = async (CommentsExpanded, commentData) =>{
     }else{
       for (let i = 0; i < 2; i++) {
         if (commentData[i]) {
-          CommentArray.push(`
+          CommentArray +=`
         <div class="d-flex align-items-start mt-3 flex-wrap flex-sm-nowrap">
               <img width="35" height="35" class="me-2 avatar-sm rounded-circle" src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=${commentData[i].email}" alt="${commentData[i].email} Avatar">
               <div class="w-100">
@@ -85,7 +108,7 @@ const drawComments = async (CommentsExpanded, commentData) =>{
                   </p>
               </div>
           </div>
-          `);
+          `;
         }
       }
     }
@@ -103,10 +126,6 @@ const displayPosts = async () => {
 
     // Fetch [posts, comments, users]
     const data = await fetchData();
-
-    loading.setAttribute('style', 'display:none !important');
-    space.setAttribute('style', 'display:none !important');
-    postsContainer.setAttribute('style', 'opacity:1');
 
     const posts = data[0];
     // const comments = data[1];
@@ -164,6 +183,9 @@ const displayPosts = async () => {
       `;
 
       postsContainer.appendChild(PostElement);
+      loading.setAttribute('style', 'display:none !important');
+      space.setAttribute('style', 'display:none !important');
+      postsContainer.setAttribute('style', 'opacity:1');
     };
   }catch(error){
     console.log(error.message);
