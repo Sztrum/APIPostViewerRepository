@@ -164,7 +164,7 @@ const displayPosts = async () => {
                       <textarea name="content" class="fs-6 form-control" rows="1"></textarea>
                   </div>
                   <div>
-                      <button type="submit" class="btn btn-primary btn-sm"> Post Comment </button>
+                      <button class="btn btn-primary btn-sm"> Post Comment </button>
                   </div>
               </form>
                 <hr>
@@ -172,7 +172,7 @@ const displayPosts = async () => {
                   ${displayComments}
                 </div>
                 <div class="mt-3 d-flex justify-content-center">
-                  <button type="submit" data-id="${post.id}" class="btn btn-sm btn-dark expand-comments"> load more comments </button>
+                  <button data-id="${post.id}" class="btn btn-sm btn-dark expand-comments"> load more comments </button>
                 </div>
             </div>
           </div>
