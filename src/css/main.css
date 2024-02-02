@@ -12,6 +12,10 @@ body{
     transition: all 0.5s ease-in;
 }
 
+.footer-container{
+    opacity: 0;
+}
+
 .loading-space{
     width: 100%;
     height: 1500px;
