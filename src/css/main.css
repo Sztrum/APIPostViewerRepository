@@ -13,7 +13,8 @@ body{
 }
 
 .footer-container{
-    opacity: 0;
+    background-color: transparent;
+    height: 50px;
 }
 
 .loading-space{
