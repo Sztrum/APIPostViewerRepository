@@ -13,7 +13,7 @@ body{
 }
 
 .footer-container{
-    background-color: transparent;
+    background-color: transparent!important;
     height: 50px;
 }
 
