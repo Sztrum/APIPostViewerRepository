@@ -159,7 +159,7 @@ const displayPosts = async () => {
           <div class="card-body">
             <p class="fs-6 fw-light text-muted mt-0">${post.body}</p>
             <div>
-              <form action="" method="POST">
+              <form>
                   <div class="mb-3">
                       <textarea name="content" class="fs-6 form-control" rows="1"></textarea>
                   </div>
