@@ -124,6 +124,10 @@ const displayPosts = async () => {
     // Fetch [posts, comments, users]
     const data = await fetchData(page);
 
+    loading.setAttribute('style', 'display:none !important');
+    space.setAttribute('style', 'display:none !important');
+    postsContainer.setAttribute('style', 'opacity:1');
+    
     const posts = data[0];
     // const comments = data[1];
     const users = data[1];
@@ -180,9 +184,6 @@ const displayPosts = async () => {
       `;
 
       postsContainer.appendChild(PostElement);
-      loading.setAttribute('style', 'display:none !important');
-      space.setAttribute('style', 'display:none !important');
-      postsContainer.setAttribute('style', 'opacity:1');
     };
   } catch (error) {
     console.error(error.message);
